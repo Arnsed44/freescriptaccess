@@ -178,9 +178,6 @@
                     initialMessage.style.display = 'none';
                     iframeContainer.classList.remove('hidden');
                     iframeContainer.classList.add('animate-fadeIn');
-                    if (window.innerWidth < 768) {
-                        iframeContainer.scrollIntoView({ behavior: 'smooth' });
-                    }
                 }, 800);
             } else {
                 errorMessage.textContent = 'Sentence did not match. Please try this new one.';
