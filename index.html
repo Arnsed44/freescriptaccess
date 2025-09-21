@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Verification</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .focus-ring-custom:focus {
+            --tw-ring-color: #4f46e5;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.7s ease-out forwards;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        .animate-shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        .transition-all-ease {
+            transition: all 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-white">
+
+    <div class="min-h-screen flex flex-col items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl shadow-2xl p-6 sm:p-8 w-full max-w-lg animate-fadeIn">
+            
+            <div class="flex flex-col items-center text-center">
+                <div class="bg-indigo-600 p-3 rounded-full">
+                    <svg xmlns="http://www.w.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-100 mt-4">Human Presence Verification</h1>
+                <p class="text-slate-400 mt-2">Please type the sentence below exactly as it appears to prove you are human.</p>
+            </div>
+
+            <form id="verificationForm" class="mt-8">
+                <div>
+                    <p id="sentenceToType" class="text-center text-lg font-mono bg-slate-900 p-4 rounded-lg border border-slate-600 mb-4"></p>
+                    <label for="userInput" class="sr-only">Type the sentence here</label>
+                    <input type="text" id="userInput" name="userInput" placeholder="Type the sentence here..."
+                           onpaste="return false;"
+                           class="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus-ring-custom transition-all-ease"
+                           required autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+                </div>
+                <p id="errorMessage" class="text-red-400 text-sm text-center pt-2 h-6"></p>
+                <button type="submit"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-indigo-500 mt-2">
+                    Verify Your Presence
+                </button>
+            </form>
+
+            <div class="text-center mt-6">
+                <button type="button" id="tutorialButton" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium transition-colors duration-200">
+                    How does this work?
+                </button>
+            </div>
+
+            <div id="successMessage" class="mt-8 text-center hidden">
+                <svg class="mx-auto h-12 w-12 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <h2 class="mt-4 text-xl font-semibold text-slate-100">Verification Successful</h2>
+                <p class="mt-1 text-slate-400">Your content is now loading below.</p>
+            </div>
+
+            <div id="iframeContainer" class="mt-8 hidden">
+                 <p class="text-sm text-slate-500 mb-3 text-center">Your verification process will appear below.</p>
+                <div class="w-full h-80 bg-slate-900 border border-slate-700 rounded-lg overflow-hidden">
+                    <iframe id="verificationFrame" class="w-full h-full border-0" title="Verification Content"></iframe>
+                </div>
+            </div>
+            
+            <div id="initialMessage" class="mt-8 text-center text-slate-500">
+                <p>The verification window will appear here.</p>
+            </div>
+
+        </div>
+
+        <footer class="text-center mt-8 text-slate-500 text-sm">
+            <p>Powered by lewmerhosting.xyz</p>
+        </footer>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div id="tutorialModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 hidden animate-fadeIn transition-opacity duration-300">
+        <div class="bg-slate-800 rounded-xl p-6 sm:p-8 max-w-sm w-full border border-slate-700 shadow-xl relative animate-fadeIn">
+            <button id="closeModalButton" class="absolute top-3 right-3 text-slate-500 hover:text-white transition-colors">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            <h3 class="text-xl font-bold text-slate-100 mb-4">Verification Steps</h3>
+            <ol class="list-decimal list-inside space-y-3 text-slate-300">
+                <li>Verify your presence to confirm you are human.</li>
+                <li>Login to Roblox on the website if you haven't already.</li>
+                <li>Join the user's game and verify.</li>
+            </ol>
+        </div>
+    </div>
+
+
+    <script>
+        const verificationForm = document.getElementById('verificationForm');
+        const sentenceToTypeElement = document.getElementById('sentenceToType');
+        const userInput = document.getElementById('userInput');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+        const iframeContainer = document.getElementById('iframeContainer');
+        const verificationFrame = document.getElementById('verificationFrame');
+        const initialMessage = document.getElementById('initialMessage');
+        const tutorialButton = document.getElementById('tutorialButton');
+        const tutorialModal = document.getElementById('tutorialModal');
+        const closeModalButton = document.getElementById('closeModalButton');
+
+        const sentences = [
+            "The quick brown fox jumps over the lazy dog.",
+            "A wizard's job is to vex chumps quickly in fog.",
+            "Pack my box with five dozen liquor jugs.",
+            "The five boxing wizards jump quickly.",
+            "How vexingly quick daft zebras jump!",
+            "Bright vixens jump; dozy fowl quack.",
+            "Sphinx of black quartz, judge my vow.",
+            "My girl wove six dozen plaid jackets before she quit."
+        ];
+
+        let currentSentence = '';
+
+        function setNewSentence() {
+            const randomIndex = Math.floor(Math.random() * sentences.length);
+            currentSentence = sentences[randomIndex];
+            sentenceToTypeElement.textContent = currentSentence;
+            userInput.value = '';
+            errorMessage.textContent = '';
+            userInput.classList.remove('border-green-500', 'border-red-500');
+            userInput.classList.add('border-slate-600');
+        }
+
+        userInput.addEventListener('input', () => {
+            const typedText = userInput.value;
+            if (currentSentence.startsWith(typedText)) {
+                userInput.classList.remove('border-red-500', 'border-slate-600');
+                userInput.classList.add('border-green-500');
+            } else {
+                userInput.classList.remove('border-green-500', 'border-slate-600');
+                userInput.classList.add('border-red-500');
+            }
+        });
+
+        verificationForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            if (userInput.value === currentSentence) {
+                verificationForm.style.display = 'none';
+                successMessage.classList.remove('hidden');
+                successMessage.classList.add('animate-fadeIn');
+
+                const yourVerificationWebsiteUrl = `https://example.com/verify`;
+                
+                setTimeout(() => {
+                    verificationFrame.src = yourVerificationWebsiteUrl;
+                    initialMessage.style.display = 'none';
+                    iframeContainer.classList.remove('hidden');
+                    iframeContainer.classList.add('animate-fadeIn');
+                    if (window.innerWidth < 768) {
+                        iframeContainer.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 800);
+            } else {
+                errorMessage.textContent = 'Sentence did not match. Please try this new one.';
+                errorMessage.classList.add('animate-shake');
+                setTimeout(() => {
+                    errorMessage.classList.remove('animate-shake');
+                }, 500);
+                setNewSentence();
+            }
+        });
+
+        tutorialButton.addEventListener('click', () => {
+            tutorialModal.classList.remove('hidden');
+        });
+
+        function hideModal() {
+            tutorialModal.classList.add('hidden');
+        }
+
+        closeModalButton.addEventListener('click', hideModal);
+
+        tutorialModal.addEventListener('click', (event) => {
+            if (event.target === tutorialModal) {
+                hideModal();
+            }
+        });
+
+        window.onload = setNewSentence;
+    </script>
+</body>
+</html>
+
